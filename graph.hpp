@@ -1,6 +1,7 @@
 #include <iostream>
 #include <list>
-
+#include <algorithm>
+#include <vector>
 using namespace std;
 class Graph{
     public: 
@@ -95,5 +96,29 @@ class Graph{
             }
         }
         return false;
+    }
+    int greedy()
+    {
+        std::vector<std::string> jobs;
+        for (int i = 0; i < usersCount; i++)
+        {
+            for(auto & job: userJobs[i]){
+                auto it = std::find(jobs.begin(), jobs.end(), job);
+                if(it == jobs.end()){
+                    jobs.push_back(job);
+                    break;
+                }
+            }
+       }
+        return jobs.size();
+    }
+    bool jobIsEmpty(list<string> jobs, string job)
+    {
+        for(auto & jobName:jobs){
+            if(jobName== job){
+                return false;
+            }
+        }
+        return true;
     }
 };

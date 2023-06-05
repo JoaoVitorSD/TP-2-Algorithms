@@ -42,48 +42,7 @@ class UserJobsOfer{
         std::string name;
         std::list<string>  jobs;
 };
-bool notMatchedJob(list<pair<User,string>> *matches, string job){
-    for(const auto& s: *matches){
-        if(s.second==job){
-            return false;
-        }
-    }
-    return true;
-}
-int greedy(list<UserJobsOfer *>  jobOfers, int jobs)
-{
-    list<pair<User,string>> * matches = new list<pair<User, string>>;
-    for(auto & userJob: jobOfers)
-    {
-        list<string> jobs = userJob->getJobs();
-        for(auto & job: jobs){
-        if(notMatchedJob(matches, job)){
-            matches->push_back(make_pair(User(userJob->getName(), jobs),job)); 
-            break;
-        }
-        }
-    }
-    return matches->size();
-}
-bool trySwapJob(list<pair<User, string>> *matches, string user, list<string> jobList, string job)
-{
-    for (auto it = matches->begin(); it != matches->end(); ++it)
-    {
-        if (it->second == job)
-        {
-        for (auto &userJobs : it->first.jobs)
-        {
-            if (notMatchedJob(matches, userJobs))
-            {
-                matches->push_back(make_pair(User(user, jobList), job));
-                it->second = userJobs;
-                return true;
-            }
-        }
-        }
-    }
-    return false;
-}
+
 bool compare( UserJobsOfer * u1, UserJobsOfer * u2)
 {
     return u1->getJobsCount() < u2->getJobsCount();
@@ -131,7 +90,7 @@ int main(int argc, char const *argv[]){
         }
         i++;
     }
-    // std::cout<< "Guloso: "<<greedy(userJobs, ofers)<<endl;
+    std::cout<< "Guloso: "<<graph->greedy()<<endl;
     std::cout << "Exato: " << graph->exact()<< endl;   
     return 0;
 }
