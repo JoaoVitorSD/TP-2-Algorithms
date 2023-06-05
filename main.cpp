@@ -15,7 +15,6 @@ class UserJobsOfer{
             this->jobs =  list<string>();
             this->jobs.push_back(job);
         }
-   
     private:
         std::string name;
         std::list<string>  jobs;

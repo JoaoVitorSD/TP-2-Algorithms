@@ -13,6 +13,7 @@ void Graph::addJob(int user, string jobName)
 }
 int Graph::greedy()
 {
+    // Checa se o elemeto foi adicionado ao vetor, se sim, passa para o próxima oferta do usuário
     std::vector<std::string> jobs;
     for (int i = 0; i < usersCount; i++)
     {
@@ -31,6 +32,7 @@ int Graph::greedy()
 int Graph::perfectMatch()
 {
     int matchesCounter = 0;
+    // Tenta fazer um match de todos os usuários. Se a tentativa for bem sucessidada, adiciona ao contador como uma possibilidade válida
     for (int user = 0; user < usersCount; user++)
     {
         list<pair<int, string>> *visitedPairs = new list<pair<int, string>>();
@@ -43,12 +45,15 @@ int Graph::matchUserJob(int user, list<pair<int, string>> *visitedPairs)
 {
     for (auto &job : userJobs[user])
     {
+        // Se não tiver sido visitado, ignora a iteracão 
         if (visited(visitedPairs, user, job))
         {
             continue;
         }
+        // Adiciona o par usuároio - serviço a lista de visitados
         visitedPairs->push_back(make_pair(user, job));
         int indexFilled = getJobMatch(job);
+        // Se o emprego não tiver um par, adiciona a lista de pares, se não, inicia uma chamada recursiva com o usuário que possui o emprego ocupado
         if (indexFilled == -1)
         {
 
@@ -59,6 +64,7 @@ int Graph::matchUserJob(int user, list<pair<int, string>> *visitedPairs)
         {
             if (matchUserJob(indexFilled, visitedPairs))
             {
+                // Substitui o par ocupado pelo outro usuario com o usuário atual 
                 replaceMatch(job, user);
                 return true;
             }
@@ -68,6 +74,7 @@ int Graph::matchUserJob(int user, list<pair<int, string>> *visitedPairs)
 }
 int Graph::getJobMatch(string job)
 {
+    // Se um usuário está ocupando uma vaga, retorna seu número, se não, retorna -1
     for (auto &jobMatch : jobsMatches)
     {
         if (jobMatch.first == job)
@@ -79,6 +86,7 @@ int Graph::getJobMatch(string job)
 }
 bool Graph::visited(list<pair<int, string>> *visitedPairs, int user, string job)
 {
+    //  Checa se um par usuário - emprego foi preenchido como verdadeiro
     for (auto &pair : *visitedPairs)
     {
         if (pair.first == user && pair.second == job)
@@ -90,6 +98,7 @@ bool Graph::visited(list<pair<int, string>> *visitedPairs, int user, string job)
 }
 void Graph::replaceMatch(string job, int newUser)
 {
+    // Substitui um par com o valor de um novo usuário
     for (auto &match : jobsMatches)
     {
         if (match.first == job)
