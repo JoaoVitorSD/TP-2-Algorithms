@@ -1,56 +1,77 @@
 #include <iostream>
 #include <list>
-#include "jobnode.hpp"
+
+using namespace std;
 class Graph{
     public: 
-    list<JobNode*> jobs;
-    bool ** bpGraph;
-    list<pair<string, string>> matches;
-    Graph(int jobs, int users){
-        this->jobs =  list<JobNode*>();
+    list<string>  * userJobs;
+    list<pair<string, list<int>>>   jobUsers;
+    list<pair<string, int>> jobsMatches;
+    int usersCount;
+
+    Graph(int usersCount){
+        this->userJobs = new list<string>[usersCount];
+        this->usersCount = usersCount;
+        this->jobUsers = list<pair<string, list<int>>>();
     }
 
-    list<pair<string, list<JobNode*> >> users;
-
-    void addJob(string jobName, string userName){
-        for(auto& job: jobs){
-            if(job->name == job->name){
-                job->addUser(userName);
+    bool swapJob(string job, int oldUser, int newUser)
+    {
+        for (auto &userJob : userJobs[oldUser])
+        {
+            if (getJobMatch(userJob)==-1)
+            {
+                jobsMatches.push_back(make_pair(userJob, newUser));
+                replaceMatch(job, newUser);
+                return true;
+            }
+        }
+    }
+    void replaceMatch(string job, int newUser){
+        for (auto &match : jobsMatches){
+            if(match.first == job){
+                match.second = newUser;
                 return;
             }
         }
-        jobs.push_back(new JobNode(jobName, userName));
     }
-    bool matchUser(string jobName, string userName){
-        for (auto &job : jobs)
+    void addJob(int user, string jobName){
+        this->userJobs[user].push_back(jobName);
+    }
+    int getJobMatch(string job)
+    {
+        for (auto &jobMatch : jobsMatches)
         {
-            if (job->name == job->name && job->empty())
+            if(jobMatch.first == job){
+                return jobMatch.second;
+            }
+        }
+        return -1;
+    }
+    int exact(){
+        int matchesCounter = 0;
+        for(int user = 0; user < usersCount;user++ ){
+            matchesCounter +=matchUserJob(user);
+        }
+        return matchesCounter;
+    }
+    int matchUserJob(int user){
+        for (auto &job : userJobs[user])
+        {
+            int indexFilled = getJobMatch(job);
+            if (indexFilled == -1)
             {
-                job->matchUser(userName);
+                jobsMatches.push_back(make_pair(job, user));
                 return true;
             }
-        }
-        return false;
-    }
-    list<string> * getUsers(string jobName){
-        for(auto& job: jobs){
-            if(job->name == jobName){
-                return job->users;
-            }
-        }
-    }
-    bool swapJob(string userName,list<string> userJobs) {
-        for (auto &job : userJobs)
-        {
-            if(matchUser(job, userName)){
-                return true;
-            }else{
-                for(auto & user: *getUsers(job)){
-                    if(swapJob()){
-
-                    }
+            else
+            {
+                if (swapJob(job, indexFilled, user))
+                {
+                    return true;
                 }
             }
         }
+        return false;
     }
 };
