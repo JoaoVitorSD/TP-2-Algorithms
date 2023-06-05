@@ -4,28 +4,6 @@
 #define INF 0x3f3f3f3f
 
 using namespace std;
-class User
-{
-public:
-    string name;
-    list<string> jobs;
-
-    User(string name)
-    {
-        this->name = name;
-        jobs = list<string>();
-    }
-
-    User(string name, list<string> jobs)
-    {
-        this->name = name;
-        this->jobs = jobs;
-    }
-    void addJob(string job)
-    {
-        jobs.push_back(job);
-    }
-};
 class UserJobsOfer{
     public:
         string getName() { return name; }
@@ -48,10 +26,6 @@ bool compare( UserJobsOfer * u1, UserJobsOfer * u2)
     return u1->getJobsCount() < u2->getJobsCount();
 }
 
-bool compareMatch(const pair<User, string> p1, const pair<User, string> &p2)
-{
-    return p1.first.name.compare(p2.first.name);
-}
 int main(int argc, char const *argv[]){
     // Lendo a Entrada
     int users, jobs, ofers;
@@ -63,6 +37,7 @@ int main(int argc, char const *argv[]){
     UserJobsOfer  * userJobsOfer = new UserJobsOfer(name, job);
     for (int i = 1; i < ofers; i++)
     {
+        // Se o usuário desta interação for diferente da passada, salva o usuário e suas ofertas em uma lista separada
         cin >> name >> job;
         if(name==lastName){
             userJobsOfer->addJob(job);
@@ -81,6 +56,7 @@ int main(int argc, char const *argv[]){
     // Ordenando a lista, para evitar verificações de vagas livres
     userJobs.sort(compare);
     // ************
+    // Montando o grafo
     Graph * graph = new Graph(users);
     int i = 0;
     for(auto & u: userJobs){
@@ -90,7 +66,8 @@ int main(int argc, char const *argv[]){
         }
         i++;
     }
+    // *******************
     std::cout<< "Guloso: "<<graph->greedy()<<endl;
-    std::cout << "Exato: " << graph->exact()<< endl;   
+    std::cout << "Exato: " << graph->perfectMatch() << endl;
     return 0;
 }
