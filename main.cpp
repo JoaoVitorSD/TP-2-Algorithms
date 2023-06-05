@@ -84,9 +84,9 @@ bool trySwapJob(list<pair<User, string>> *matches, string user, list<string> job
     }
     return false;
 }
-bool compare( UserJobsOfer  u1, UserJobsOfer u2)
+bool compare( UserJobsOfer * u1, UserJobsOfer * u2)
 {
-    return u1.getJobsCount() < u2.getJobsCount();
+    return u1->getJobsCount() < u2->getJobsCount();
 }
 
 bool compareMatch(const pair<User, string> p1, const pair<User, string> &p2)
@@ -97,20 +97,20 @@ int main(int argc, char const *argv[]){
     // Lendo a Entrada
     int users, jobs, ofers;
     cin>> users>> jobs>> ofers;
-    list<UserJobsOfer>  userJobs = list<UserJobsOfer>();
+    list<UserJobsOfer*>  userJobs = list<UserJobsOfer*>();
     string name, job, lastName;
     cin>> name>> job;
     lastName = name;
-    UserJobsOfer  userJobsOfer =  UserJobsOfer(name, job);
+    UserJobsOfer  * userJobsOfer = new UserJobsOfer(name, job);
     for (int i = 1; i < ofers; i++)
     {
         cin >> name >> job;
         if(name==lastName){
-            userJobsOfer.addJob(job);
+            userJobsOfer->addJob(job);
             
         }else{
             userJobs.push_back(userJobsOfer);
-            userJobsOfer =  UserJobsOfer(name, job);
+            userJobsOfer =  new UserJobsOfer(name, job);
         }
         if (i == ofers - 1)
         {
@@ -122,16 +122,16 @@ int main(int argc, char const *argv[]){
     // Ordenando a lista, para evitar verificações de vagas livres
     userJobs.sort(compare);
     // ************
-    Graph graph = Graph(users);
+    Graph * graph = new Graph(users);
     int i = 0;
     for(auto & u: userJobs){
-        list<string>  jobList = u.getJobs();
-        for(auto & job : jobList){
-            graph.addJob(i, job);
+        list<string>  jobList = u->getJobs();
+        for(auto & jobName : jobList){
+            graph->addJob(i, jobName);
         }
         i++;
     }
-    // std::cout<< "Guloso: "<<greedy(userJobs, ofers)<<endl; 
-    std::cout << "Exato: " << graph.exact()<< endl;
+    // std::cout<< "Guloso: "<<greedy(userJobs, ofers)<<endl;
+    std::cout << "Exato: " << graph->exact()<< endl;   
     return 0;
 }

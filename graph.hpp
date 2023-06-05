@@ -13,20 +13,10 @@ class Graph{
         this->userJobs = new list<string>[usersCount];
         this->usersCount = usersCount;
         this->jobUsers = list<pair<string, list<int>>>();
+        this->jobsMatches =  list<pair<string, int>>();
     }
 
-    bool swapJob(string job, int oldUser, int newUser)
-    {
-        for (auto &userJob : userJobs[oldUser])
-        {
-            if (getJobMatch(userJob)==-1)
-            {
-                jobsMatches.push_back(make_pair(userJob, newUser));
-                replaceMatch(job, newUser);
-                return true;
-            }
-        }
-    }
+
     void replaceMatch(string job, int newUser){
         for (auto &match : jobsMatches){
             if(match.first == job){
@@ -51,25 +41,57 @@ class Graph{
     int exact(){
         int matchesCounter = 0;
         for(int user = 0; user < usersCount;user++ ){
-            matchesCounter +=matchUserJob(user);
+            list<pair<int, string>>*  visitedPairs = new list<pair<int, string>>();
+            matchesCounter += matchUserJob(user, visitedPairs);
+            delete visitedPairs;
         }
         return matchesCounter;
     }
-    int matchUserJob(int user){
+    int matchUserJob(int user, list<pair<int, string>> *visitedPairs)
+    {
         for (auto &job : userJobs[user])
         {
+            if(visited(visitedPairs, user, job)){
+                continue;
+            }
+            visitedPairs->push_back(make_pair(user, job));
             int indexFilled = getJobMatch(job);
             if (indexFilled == -1)
             {
+
                 jobsMatches.push_back(make_pair(job, user));
                 return true;
             }
             else
             {
-                if (swapJob(job, indexFilled, user))
+                if (matchUserJob(indexFilled, visitedPairs))
                 {
+                    replaceMatch(job, user);
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+    bool visited(list<pair<int, string>> *visitedPairs, int user, string job)
+    {
+        for(auto & pair: *visitedPairs){
+            if(pair.first == user && pair.second == job ){
+                return true;
+            }
+        }
+        return false;
+    }
+    bool swapJob(string job, int oldUser, int newUser)
+    {
+        for (auto &userJob : userJobs[oldUser])
+        {
+            int userFilled = getJobMatch(userJob);
+            if (userFilled == -1)
+            {
+                jobsMatches.push_back(make_pair(userJob, oldUser));
+                replaceMatch(job, newUser);
+                return true;
             }
         }
         return false;
